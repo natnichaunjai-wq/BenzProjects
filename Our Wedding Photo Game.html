@@ -57,6 +57,8 @@ body.edit .wrap{padding-top:56px}
 <div class="wrap" id="app"></div>
 <nav id="nav" class="hidden"></nav>
 <div id="panel" class="hidden"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -201,11 +203,19 @@ document.addEventListener('click',e=>{if(!EDIT||!e.target.closest('#app'))return
 $('#pgc').onclick=()=>openPanel('p','page:'+(me.name?tab:'reg'));
 $('#done').onclick=()=>{EDIT=false;$('#panel').classList.add('hidden');tab='admin';render()};
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBJKOHBsu3XhhdKcdIpI1no5SuWmGBBBGY",
+  authDomain: "wedding-game-7fcdb.firebaseapp.com",
+  projectId: "wedding-game-7fcdb",
+  storageBucket: "wedding-game-7fcdb.firebasestorage.app",
+  messagingSenderId: "567815531781",
+  appId: "1:567815531781:web:b3c2eef659760dae841b6c"
+};
+
 (async function init(){
-  let user=null;try{user=await claude.use('user')}catch(e){}
-  try{DB=await claude.use('db')}catch(e){DB=null}
-  try{me.id=user?await user.id():null}catch(e){}
-  if(!me.id){try{me.id=localStorage.getItem('wg_uid')}catch(e){}if(!me.id){me.id='g'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('wg_uid',me.id)}catch(e){}}}
+  try{firebase.initializeApp(firebaseConfig);DB=firebase.firestore();}catch(e){DB=null}
+  try{me.id=localStorage.getItem('wg_uid')}catch(e){}
+  if(!me.id){me.id='g'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('wg_uid',me.id)}catch(e){}}
   if(DB){
     DB.doc('config/main').onSnapshot(s=>{if(s.exists)S.config={...DEF(),...s.data()};render()});
     DB.doc('media/main').onSnapshot(s=>{if(s.exists)S.media={heroes:[],logo:'',icons:{},...s.data()};render()});

@@ -57,17 +57,17 @@ body.edit .wrap{padding-top:56px}
 <div class="wrap" id="app"></div>
 <nav id="nav" class="hidden"></nav>
 <div id="panel" class="hidden"></div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const FONTS=['Poppins','Playfair Display','Dancing Script','Great Vibes','Lora','Montserrat'];
 const DEFAULT_RULES=["Join with your name – it only takes a moment.","Share up to 5 photos from today’s ceremony. Every photo you upload = 1 coin.","Add one sentence to each photo to tell the story.","Browse the gallery and like your favorite photos – up to 5 likes each, and never your own.","Every like your photo receives = 1 coin for you.","The 3 guests with the most coins win a lovely prize from the couple!"];
-const DEF=()=>({rules:DEFAULT_RULES,st:{},tx:{},icons:{},labels:{},blocks:[]});
+const THAI_RULES=["กรอกชื่อของคุณเพื่อเข้าร่วมเกม (ชื่อต้องไม่ซ้ำกับคนอื่น)","ถ่ายภาพบรรยากาศงานแต่งงาน แล้วอัปโหลดได้สูงสุด 5 รูป ทุกรูปที่อัปโหลดจะได้ 1 เหรียญ","เขียนคำบรรยายใต้ภาพสั้นๆ 1 ประโยค เล่าเรื่องราวของภาพนั้น","เข้าไปที่หน้า Gallery แล้วกดหัวใจให้ภาพที่ชอบได้สูงสุด 5 ภาพ (กดให้ภาพของตัวเองไม่ได้)","ทุกครั้งที่มีคนกดหัวใจให้ภาพของคุณ คุณจะได้เพิ่ม 1 เหรียญ","ดูอันดับ 3 อันดับแรกได้ที่หน้า Top 3 และดูเหรียญของคุณได้ที่หน้า My profile","ผู้ที่ได้เหรียญมากที่สุด 3 อันดับแรกจะได้รับรางวัลจากบ่าวสาว 🎁"];
+const DEF=()=>({rules:THAI_RULES,st:{},tx:{},icons:{},labels:{},blocks:[]});
 const PAGES=[['home','🏠','Home'],['gallery','📸','Gallery'],['top','🏆','Top 3'],['me','👤','My profile']];
 let S={guests:{},photos:{},likes:{},config:DEF(),media:{heroes:[],logo:'',icons:{}}};
 let me={id:null,name:null,joined:false},isAdmin=false,tab='home',DB=null,EDIT=false;
+let PB=null;
 const adminId=()=>{const a=Object.entries(S.guests).filter(([,g])=>g.role==='admin').sort((x,y)=>(x[1].at||0)-(y[1].at||0));return a.length?a[0][0]:null};
 
 const st=k=>S.config.st[k]||{};
@@ -118,7 +118,7 @@ function vHome(){
   const slots=[0,1,2,3,4].map(i=>{const e=mine[i];return e?`<div class="slot"><div class="pic" data-chg="${e[0]}"><img src="${e[1].img}"></div><input type="text" maxlength="90" placeholder="Describe in 1 sentence…" value="${esc(e[1].cap)}" data-cap="${e[0]}"><div class="row"><button class="btn ghost sm" data-chg="${e[0]}">Change</button><button class="btn ghost sm" data-rm="${e[0]}">Remove</button></div></div>`:`<div class="slot"><div class="pic" data-add="1">+ Add photo</div></div>`}).join('');
   return `<div class="center" style="margin-bottom:14px">${X('h1','home.title','Our Wedding Day')}<div class="mute">${X('span','home.welcome','Welcome,')} ${esc(me.name)}!</div></div>
   ${C('home.hero',`<div class="hero">${pics}</div>${isAdmin?'<p class="mute center" style="margin:8px 0 0">Admin: tap a box to set the Bride &amp; Groom photos (outside edit mode).</p>':''}`)}
-  ${C('home.rules',`${X('h3','home.rules.h','How to play 🌸')}<ol id="rl" style="padding-left:20px;margin:10px 0 0">${S.config.rules.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>${isAdmin?'<button class="btn ghost sm" id="editRules" style="margin-top:8px">Edit rules</button>':''}`)}
+  ${C('home.rules',`${X('h3','home.rules.h','How to play 🌸')}<ol id="rl" data-rules="1" class="ed" style="padding-left:20px;margin:10px 0 0">${S.config.rules.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>${isAdmin?'<button class="btn ghost sm" id="editRules" style="margin-top:8px">Edit rules</button>':''}`)}
   ${C('home.mission',`${X('h3','home.mission.h','Your mission: share 5 photos 📷')}<p class="mute" style="margin:4px 0 12px">${mine.length}/5 · ${X('span','home.mission.sub','1 coin per photo. You can change or remove them anytime.')}</p><div class="slots">${slots}</div>`)}${blocks('home')}`;
 }
 function vGallery(){
@@ -180,42 +180,46 @@ function bind(){
 function delPhoto(id){Object.entries(S.likes).forEach(([k,l])=>{if(l.photo===id)del('likes',k,1)});del('photos',id)}
 function delGuest(id){Object.entries(S.photos).forEach(([pid,p])=>{if(p.owner===id)delPhoto(pid)});Object.entries(S.likes).forEach(([k,l])=>{if(l.by===id)del('likes',k,1)});del('guests',id)}
 
-function openPanel(kind,key,d){
-  const s=st(key),p=$('#panel');let h=`<b>${esc(key)}</b><br>`;
+const BKP=()=>JSON.stringify({st:S.config.st,tx:S.config.tx,rules:S.config.rules});
+const revertDraft=()=>{if(PB){S.config={...S.config,...JSON.parse(PB)};PB=null}};
+function wireButtons(p,bk,reset){
+  $('#pc').onclick=()=>{S.config={...S.config,...JSON.parse(bk)};PB=null;render();p.classList.add('hidden')};
+  $('#ps').onclick=()=>{commit('config');PB=null;$('#pm').textContent='✅ Saved';setTimeout(()=>p.classList.add('hidden'),700)};
+  if(reset)$('#pr').onclick=reset;
+}
+function openRules(bkp){
+  const p=$('#panel');if(!bkp)revertDraft();const bk=bkp||BKP();PB=bk;
+  p.innerHTML=`<b>Game rules</b><br><label class="mute">One rule per line</label><textarea id="rtx" rows="9">${esc(S.config.rules.join('\n'))}</textarea><div class="row"><button class="btn ghost sm" id="pc">Cancel</button><button class="btn sm" id="ps">💾 Save</button></div><div class="mute" id="pm">Not saved yet</div>`;p.classList.remove('hidden');
+  $('#rtx').oninput=()=>{S.config={...S.config,rules:$('#rtx').value.split('\n').map(s=>s.trim()).filter(Boolean)};render();$('#pm').textContent='Not saved yet – press Save'};
+  wireButtons(p,bk);
+}
+function openPanel(kind,key,d,bkp){
+  const p=$('#panel');if(!bkp)revertDraft();const bk=bkp||BKP();PB=bk;const s=st(key);let h=`<b>${esc(key)}</b><br>`;
   const f=(l,i)=>`<label class="mute">${l}</label>${i}`;
   const cf=(id,v,def)=>`<div class="cf"><input type="color" data-p="${id}" value="${/^#[0-9a-f]{6}$/i.test(v||'')?v:def}"><input type="text" data-p="${id}" value="${esc(v||'')}" placeholder="#d9667f"></div>`;
   if(kind==='k')h+=f('Text',`<input type="text" data-p="text" value="${esc(S.config.tx[key]??d)}">`)+f('Text color (color code)',cf('color',s.color,'#4a2c35'))+f('Font',`<select data-p="font"><option value="">Default</option>${FONTS.map(x=>`<option ${s.font===x?'selected':''}>${x}</option>`).join('')}</select>`)+f('Text size (px)',`<input type="number" data-p="size" value="${s.size||''}" min="8" max="80">`);
   else if(kind==='c')h+=f('Box color (color code)',cf('bg',s.bg,'#ffffff'))+f('Corner radius (px)',`<input type="number" data-p="radius" value="${s.radius??''}" min="0" max="60">`)+f('Spacing inside box / size (px)',`<input type="number" data-p="pad" value="${s.pad??''}" min="0" max="80">`);
   else h+=f('Page background color (color code)',cf('bg',s.bg,'#fff5f7'));
-  p.innerHTML=h+`<div class="row"><button class="btn ghost sm" id="pr">Reset</button><button class="btn sm" id="pc">Close</button></div>`;p.classList.remove('hidden');
+  p.innerHTML=h+`<div class="row"><button class="btn ghost sm" id="pr">Reset</button><button class="btn ghost sm" id="pc">Cancel</button><button class="btn sm" id="ps">💾 Save</button></div><div class="mute" id="pm">Not saved yet</div>`;p.classList.remove('hidden');
   p.querySelectorAll('[data-p]').forEach(el=>{
     const fl=el.dataset.p,apply=sv=>{let v=el.value;
       if(el.type==='color'){const t=p.querySelector('input[type=text][data-p="'+fl+'"]');if(t)t.value=v}
       else if(el.type==='text'&&fl!=='text'){const c=p.querySelector('input[type=color][data-p="'+fl+'"]');if(c&&/^#[0-9a-f]{6}$/i.test(v))c.value=v}
       if(fl==='text')S.config={...S.config,tx:{...S.config.tx,[key]:v}};
       else{if(['size','radius','pad'].includes(fl))v=v===''?'':+v;S.config={...S.config,st:{...S.config.st,[key]:{...st(key),[fl]:v}}}}
-      render();if(sv)commit('config')};
-    el.oninput=()=>apply(false);el.onchange=()=>apply(true)});
-  $('#pr').onclick=()=>{const a={...S.config.st},b={...S.config.tx};delete a[key];delete b[key];setCfg({st:a,tx:b});p.classList.add('hidden')};
-  $('#pc').onclick=()=>p.classList.add('hidden');
+      render();$('#pm').textContent='Not saved yet – press Save'};
+    el.oninput=()=>apply(false);el.onchange=()=>apply(false)});
+  wireButtons(p,bk,()=>{const a={...S.config.st},b={...S.config.tx};delete a[key];delete b[key];S.config={...S.config,st:a,tx:b};render();openPanel(kind,key,d,bk)});
 }
-document.addEventListener('click',e=>{if(!EDIT||!e.target.closest('#app'))return;e.preventDefault();e.stopPropagation();const k=e.target.closest('[data-k]');if(k)return openPanel('k',k.dataset.k,k.dataset.d);const c=e.target.closest('[data-c]');if(c)openPanel('c',c.dataset.c)},true);
+document.addEventListener('click',e=>{if(!EDIT||!e.target.closest('#app'))return;e.preventDefault();e.stopPropagation();const rr=e.target.closest('[data-rules]');if(rr)return openRules();const k=e.target.closest('[data-k]');if(k)return openPanel('k',k.dataset.k,k.dataset.d);const c=e.target.closest('[data-c]');if(c)openPanel('c',c.dataset.c)},true);
 $('#pgc').onclick=()=>openPanel('p','page:'+(me.name?tab:'reg'));
-$('#done').onclick=()=>{EDIT=false;$('#panel').classList.add('hidden');tab='admin';render()};
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBJKOHBsu3XhhdKcdIpI1no5SuWmGBBBGY",
-  authDomain: "wedding-game-7fcdb.firebaseapp.com",
-  projectId: "wedding-game-7fcdb",
-  storageBucket: "wedding-game-7fcdb.firebasestorage.app",
-  messagingSenderId: "567815531781",
-  appId: "1:567815531781:web:b3c2eef659760dae841b6c"
-};
+$('#done').onclick=()=>{revertDraft();EDIT=false;$('#panel').classList.add('hidden');tab='admin';render()};
 
 (async function init(){
-  try{firebase.initializeApp(firebaseConfig);DB=firebase.firestore();}catch(e){DB=null}
-  try{me.id=localStorage.getItem('wg_uid')}catch(e){}
-  if(!me.id){me.id='g'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('wg_uid',me.id)}catch(e){}}
+  let user=null;try{user=await claude.use('user')}catch(e){}
+  try{DB=await claude.use('db')}catch(e){DB=null}
+  try{me.id=user?await user.id():null}catch(e){}
+  if(!me.id){try{me.id=localStorage.getItem('wg_uid')}catch(e){}if(!me.id){me.id='g'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('wg_uid',me.id)}catch(e){}}}
   if(DB){
     DB.doc('config/main').onSnapshot(s=>{if(s.exists)S.config={...DEF(),...s.data()};render()});
     DB.doc('media/main').onSnapshot(s=>{if(s.exists)S.media={heroes:[],logo:'',icons:{},...s.data()};render()});

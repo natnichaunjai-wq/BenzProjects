@@ -1,1 +1,232 @@
-# BenzProjects
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Our Wedding Photo Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Great+Vibes&family=Lora:wght@400;600&family=Montserrat:wght@400;600&family=Playfair+Display:wght@500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff5f7;--card:#ffffff;--ink:#4a2c35;--mute:#8d6b75;--rose:#d9667f;--rose2:#f4b6c4;--soft:#fde3ea;--line:#f3cfd8;--gold:#c9973f;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a1a20;--card:#3a252d;--ink:#fbe9ee;--mute:#cfa9b5;--rose:#ee8aa1;--rose2:#7a3f50;--soft:#4a2e38;--line:#5c3a46;--gold:#e0b563;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#2a1a20;--card:#3a252d;--ink:#fbe9ee;--mute:#cfa9b5;--rose:#ee8aa1;--rose2:#7a3f50;--soft:#4a2e38;--line:#5c3a46;--gold:#e0b563;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Poppins,system-ui,sans-serif;font-size:15px;line-height:1.5;padding-bottom:90px}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif;margin:0}
+.wrap{max-width:560px;margin:0 auto;padding:18px 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:16px;box-shadow:0 4px 14px rgba(217,102,127,.08)}
+.center{text-align:center}.mute{color:var(--mute);font-size:13px}.err{color:#c0392b;font-size:13px;min-height:18px}
+.btn{background:var(--rose);color:#fff;border:0;border-radius:999px;padding:10px 20px;font:600 14px Poppins,sans-serif;cursor:pointer}
+.btn.ghost{background:var(--soft);color:var(--rose)}.btn.sm{padding:6px 12px;font-size:12px}.btn.red{background:#c0392b;color:#fff}
+input[type=text],input[type=number],textarea,select{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:9px 12px;font:inherit;margin:4px 0 8px}
+.hero{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hero div{aspect-ratio:3/4;border-radius:14px;background:var(--soft);border:1px dashed var(--rose2);overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:12px;text-align:center;padding:4px}
+.hero img,.slot img,.post img,.av img,.ni img{width:100%;height:100%;object-fit:cover;display:block}
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.slot .pic{aspect-ratio:1;border-radius:14px;background:var(--soft);border:1px dashed var(--rose2);overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--rose);font-weight:600}
+.slot input{font-size:13px;padding:7px 10px}
+.row{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-top:6px}
+.post{padding:0;overflow:hidden}.post .pic{aspect-ratio:1;background:var(--soft)}.post .b{padding:12px 14px}
+.who{display:flex;gap:8px;align-items:center;font-weight:600}
+.av{width:30px;height:30px;border-radius:50%;background:var(--rose2);overflow:hidden;display:inline-flex;align-items:center;justify-content:center;flex:none;font-size:14px;color:#fff}
+.av.lg{width:110px;height:110px;font-size:44px;margin:0 auto;cursor:pointer;border:3px solid var(--rose2)}
+.like{background:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--rose);font:600 13px Poppins;cursor:pointer}
+.like.on{background:var(--rose);color:#fff;border-color:var(--rose)}.like:disabled{opacity:.4;cursor:default}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom,0px));z-index:5}
+nav button{background:none;border:0;color:var(--mute);font:500 11px Poppins;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:20px;height:24px;display:flex}.ni{width:24px;height:24px;border-radius:6px;overflow:hidden}nav button.on{color:var(--rose);font-weight:600}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:8px 0 16px}
+.podium div{flex:1;border-radius:14px 14px 0 0;background:var(--soft);text-align:center;padding:10px 4px;border:1px solid var(--line)}
+.podium .p1{height:150px;background:var(--rose2)}.podium .p2{height:120px}.podium .p3{height:100px}
+.big{font:700 40px 'Playfair Display',serif;color:var(--rose)}
+.rank{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat div{background:var(--soft);border-radius:14px;padding:12px;text-align:center}
+.badge{background:var(--gold);color:#fff;border-radius:999px;font-size:11px;padding:2px 8px;margin-left:6px}
+.logo{max-width:150px;max-height:150px;border-radius:12px;margin:0 auto 8px;display:block}
+.hidden{display:none!important}
+.adm{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.adm>div:nth-child(2){flex:1}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.thumbs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px}
+body.edit .ed,body.edit [data-c]{outline:2px dashed var(--rose);outline-offset:2px;cursor:pointer}
+#bar{position:fixed;top:0;left:0;right:0;z-index:20;background:var(--rose);color:#fff;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px;font-size:12px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+body.edit .wrap{padding-top:56px}
+#panel{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:2px solid var(--rose);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));max-height:60vh;overflow:auto;max-width:560px;margin:0 auto;border-radius:18px 18px 0 0}
+.cf{display:flex;gap:8px;align-items:center}.cf input[type=color]{width:44px;height:38px;padding:0;border:0;background:none}
+</style>
+</head>
+<body>
+<div id="bar" class="hidden"><span>✏️ Edit mode: tap any text or box to style it</span><span><button class="btn ghost sm" id="pgc">Page color</button> <button class="btn ghost sm" id="done">Done</button></span></div>
+<div class="wrap" id="app"></div>
+<nav id="nav" class="hidden"></nav>
+<div id="panel" class="hidden"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const FONTS=['Poppins','Playfair Display','Dancing Script','Great Vibes','Lora','Montserrat'];
+const DEFAULT_RULES=["Join with your name – it only takes a moment.","Share up to 5 photos from today’s ceremony. Every photo you upload = 1 coin.","Add one sentence to each photo to tell the story.","Browse the gallery and like your favorite photos – up to 5 likes each, and never your own.","Every like your photo receives = 1 coin for you.","The 3 guests with the most coins win a lovely prize from the couple!"];
+const DEF=()=>({rules:DEFAULT_RULES,st:{},tx:{},icons:{},labels:{},blocks:[]});
+const PAGES=[['home','🏠','Home'],['gallery','📸','Gallery'],['top','🏆','Top 3'],['me','👤','My profile']];
+let S={guests:{},photos:{},likes:{},config:DEF(),media:{heroes:[],logo:'',icons:{}}};
+let me={id:null,name:null,joined:false},isAdmin=false,tab='home',DB=null,EDIT=false;
+const adminId=()=>{const a=Object.entries(S.guests).filter(([,g])=>g.role==='admin').sort((x,y)=>(x[1].at||0)-(y[1].at||0));return a.length?a[0][0]:null};
+
+const st=k=>S.config.st[k]||{};
+const tsty=k=>{const s=st(k);return [s.color&&`color:${s.color}`,s.font&&`font-family:'${s.font}',serif`,s.size&&`font-size:${s.size}px`].filter(Boolean).join(';')};
+const csty=k=>{const s=st(k),n=v=>v!==undefined&&v!=='';return [s.bg&&`background:${s.bg}`,n(s.radius)&&`border-radius:${s.radius}px`,n(s.pad)&&`padding:${s.pad}px`].filter(Boolean).join(';')};
+const X=(tag,k,d,cls='')=>`<${tag} class="ed ${cls}" data-k="${k}" data-d="${esc(d)}" style="${tsty(k)}">${esc(S.config.tx[k]??d)}</${tag}>`;
+const C=(k,inner,cls='')=>`<div class="card ${cls}" data-c="${k}" style="${csty(k)}">${inner}</div>`;
+const blocks=pg=>S.config.blocks.filter(b=>b.page===pg).map(b=>C('blk'+b.id,X('h3','blk'+b.id+'t','New section')+X('p','blk'+b.id+'b','Write your text here.','mute'))).join('');
+
+function saveLocal(){try{localStorage.setItem('wg_state',JSON.stringify(S))}catch(e){}}
+function commit(col){if(DB&&(col==='config'||col==='media'))DB.doc(col+'/main').set(S[col]).catch(()=>alert('Could not save, please try again.'));else if(!DB)saveLocal()}
+function put(col,id,data){S[col][id]=data;if(DB)DB.collection(col).doc(id).set(data).catch(()=>alert('Could not save, please try again.'));else saveLocal();render()}
+function del(col,id,quiet){delete S[col][id];if(DB)DB.collection(col).doc(id).delete().catch(()=>{});else saveLocal();if(!quiet)render()}
+function setCfg(p){S.config={...S.config,...p};commit('config');render()}
+function setMedia(p){S.media={...S.media,...p};commit('media');render()}
+
+function shrink(file,max){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const k=Math.min(1,max/Math.max(i.width,i.height));const c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.7))};i.src=r.result};r.readAsDataURL(file)})}
+function pick(cb,max=640){const f=document.createElement('input');f.type='file';f.accept='image/*';f.onchange=async()=>{if(f.files[0])cb(await shrink(f.files[0],max))};f.click()}
+const myPhotos=()=>Object.entries(S.photos).filter(([,p])=>p.owner===me.id).sort((a,b)=>a[1].t-b[1].t);
+const myLikes=()=>Object.values(S.likes).filter(l=>l.by===me.id);
+const nameTaken=(v,except)=>Object.entries(S.guests).some(([id,g])=>id!==except&&g.name.trim().toLowerCase()===v.trim().toLowerCase());
+const gname=id=>S.guests[id]?.name||'Guest';
+const avatar=(id,cls='')=>{const g=S.guests[id];return `<span class="av ${cls}">${g?.av?`<img src="${g.av}">`:'🌸'}</span>`};
+function coins(uid){const up=Object.values(S.photos).filter(p=>p.owner===uid).length,lk=Object.values(S.likes).filter(l=>l.owner===uid).length;return{up,lk,total:up+lk}}
+
+function render(){
+  const a=document.activeElement;if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')&&a.type!=='file'&&$('#app').contains(a))return;
+  const app=$('#app'),nav=$('#nav');
+  isAdmin=!!me.name&&adminId()===me.id;if(!isAdmin){EDIT=false;$('#panel').classList.add('hidden');if(tab==='admin')tab='home'}
+  document.body.classList.toggle('edit',EDIT);$('#bar').classList.toggle('hidden',!EDIT);
+  const pk=me.name?tab:'reg';document.body.style.background=st('page:'+pk).bg||'';
+  if(!me.name){nav.classList.add('hidden');
+    app.innerHTML=`<div class="center" style="padding-top:30px">${S.media.logo?`<img class="logo" src="${S.media.logo}">`:'<div style="font-size:44px">💍</div>'}${X('h1','reg.title','Our Wedding Day')}${X('p','reg.sub','Join the fun, share your photos and win coins!','mute')}
+    ${C('reg.card',`${X('label','reg.label','Your name','mute')}<input type="text" id="nm" maxlength="30" placeholder="e.g. Aunt Lisa">${adminId()?'':`<label class="mute">I am joining as</label><select id="role"><option value="guest">Guest</option><option value="admin">Admin (organizer – only 1 person)</option></select>`}<div class="err" id="er"></div><button class="btn" style="width:100%" id="go">${esc(S.config.tx['reg.btn']??'Join the game')}</button>`,'')}${blocks('reg')}</div>`;
+    $('#go').onclick=()=>{if(EDIT)return;const v=$('#nm').value.trim();if(!v)return;if(nameTaken(v,me.id)){$('#er').textContent='This name is already taken. Please choose another name.';return}const rs=$('#role'),role=(rs&&rs.value==='admin'&&!adminId())?'admin':'guest';me.name=v;me.joined=true;put('guests',me.id,{name:v,av:'',role,at:Date.now()})};
+    return}
+  nav.classList.remove('hidden');
+  const pages=isAdmin?[...PAGES,['admin','⚙️','Admin']]:PAGES;
+  nav.innerHTML=pages.map(([k,i,l])=>{const ic=S.media.icons[k]?`<i class="ni"><img src="${S.media.icons[k]}"></i>`:esc(S.config.icons[k]||i);return `<button class="${tab===k?'on':''}" data-t="${k}"><span>${ic}</span>${esc(S.config.labels[k]||l)}</button>`}).join('');
+  nav.querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render();scrollTo(0,0)});
+  app.innerHTML=({home:vHome,gallery:vGallery,top:vTop,me:vMe,admin:vAdmin})[tab]();
+  bind();
+}
+
+function vHome(){
+  const h=S.media.heroes,mine=myPhotos();
+  const pics=[0,1,2].map(i=>`<div ${isAdmin?`data-hero="${i}" style="cursor:pointer"`:''}>${h[i]?`<img src="${h[i]}">`:(isAdmin?'+ Add photo':'Bride &amp; Groom')}</div>`).join('');
+  const slots=[0,1,2,3,4].map(i=>{const e=mine[i];return e?`<div class="slot"><div class="pic" data-chg="${e[0]}"><img src="${e[1].img}"></div><input type="text" maxlength="90" placeholder="Describe in 1 sentence…" value="${esc(e[1].cap)}" data-cap="${e[0]}"><div class="row"><button class="btn ghost sm" data-chg="${e[0]}">Change</button><button class="btn ghost sm" data-rm="${e[0]}">Remove</button></div></div>`:`<div class="slot"><div class="pic" data-add="1">+ Add photo</div></div>`}).join('');
+  return `<div class="center" style="margin-bottom:14px">${X('h1','home.title','Our Wedding Day')}<div class="mute">${X('span','home.welcome','Welcome,')} ${esc(me.name)}!</div></div>
+  ${C('home.hero',`<div class="hero">${pics}</div>${isAdmin?'<p class="mute center" style="margin:8px 0 0">Admin: tap a box to set the Bride &amp; Groom photos (outside edit mode).</p>':''}`)}
+  ${C('home.rules',`${X('h3','home.rules.h','How to play 🌸')}<ol id="rl" style="padding-left:20px;margin:10px 0 0">${S.config.rules.map(r=>`<li>${esc(r)}</li>`).join('')}</ol>${isAdmin?'<button class="btn ghost sm" id="editRules" style="margin-top:8px">Edit rules</button>':''}`)}
+  ${C('home.mission',`${X('h3','home.mission.h','Your mission: share 5 photos 📷')}<p class="mute" style="margin:4px 0 12px">${mine.length}/5 · ${X('span','home.mission.sub','1 coin per photo. You can change or remove them anytime.')}</p><div class="slots">${slots}</div>`)}${blocks('home')}`;
+}
+function vGallery(){
+  const list=Object.entries(S.photos).sort((a,b)=>b[1].t-a[1].t),used=myLikes().length;
+  const head=`<div class="center">${X('h2','gal.title','Gallery')}<p class="mute">${used}/5 likes used · ${X('span','gal.sub','1 like = 1 coin for the owner')}</p></div>`;
+  if(!list.length)return head+`<p class="center mute">No photos yet. Be the first to upload!</p>`+blocks('gallery');
+  return head+list.map(([id,p])=>{const liked=!!S.likes[me.id+'_'+id],n=Object.values(S.likes).filter(l=>l.photo===id).length,own=p.owner===me.id;
+    return C('gal.post',`<div class="pic"><img src="${p.img}" loading="lazy"></div><div class="b"><div class="who">${avatar(p.owner)}${esc(gname(p.owner))}</div><div style="margin:6px 0 10px">${esc(p.cap)}</div><button class="like ${liked?'on':''}" data-like="${id}" ${own||(!liked&&used>=5)?'disabled':''}>♥ ${n}</button> ${own?'<span class="mute">Your photo</span>':''}</div>`,'post')}).join('')+blocks('gallery');
+}
+function vTop(){
+  const r=Object.keys(S.guests).map(id=>({id,name:gname(id),...coins(id)})).sort((a,b)=>b.total-a.total),t=r.slice(0,3),med=['🥇','🥈','🥉'],cls=['p1','p2','p3'];
+  const pod=[1,0,2].filter(i=>t[i]).map(i=>`<div class="${cls[i]}"><div style="font-size:28px">${med[i]}</div><b>${esc(t[i].name)}</b><div class="mute">${t[i].total} coins</div></div>`).join('');
+  return `<div class="center">${X('h2','top.title','Top 3 🏆')}</div><div class="podium">${pod||'<p class="mute">No scores yet</p>'}</div>${C('top.list',r.slice(0,10).map((x,i)=>`<div class="rank"><span>${i+1}. ${esc(x.name)}${x.id===me.id?' (you)':''}</span><b>${x.total}</b></div>`).join(''))}${blocks('top')}`;
+}
+function vMe(){
+  const c=coins(me.id),mine=myPhotos();
+  return `<div class="center" style="margin-bottom:10px">${X('h2','me.title','My profile')}</div>
+  ${C('me.prof',`<div class="center"><div class="av lg" id="avBtn">${S.guests[me.id]?.av?`<img src="${S.guests[me.id].av}">`:'🌸'}</div><div class="mute" style="margin:6px 0">Tap the circle to change your picture</div></div><label class="mute">Your name</label><div class="row"><input type="text" id="pn" maxlength="30" value="${esc(me.name)}" style="margin:0"><button class="btn sm" id="pns">Save</button></div><div class="err" id="er"></div>`)}
+  ${adminId()?'':`<div class="card center"><p class="mute">There is no admin yet.</p><button class="btn sm" id="beAdmin">Become admin</button></div>`}
+  ${C('me.coins',`<div class="center"><div class="mute">${X('span','me.total','Total coins')}</div><div class="big">${c.total}</div></div><div class="stat"><div><b>${c.up}</b><div class="mute">${X('span','me.up','from uploads')}</div></div><div><b>${c.lk}</b><div class="mute">${X('span','me.lk','from likes')}</div></div></div>`)}
+  ${C('me.photos',`${X('h3','me.photos.h','My photos')}${mine.length?`<div class="slots" style="margin-top:10px">${mine.map(([id,p])=>`<div class="slot"><div class="pic"><img src="${p.img}"></div><div class="mute" style="margin-top:4px">♥ ${Object.values(S.likes).filter(l=>l.photo===id).length} · ${esc(p.cap)}</div></div>`).join('')}</div>`:'<p class="mute">No photos yet – upload from the Home page.</p>'}`)}${blocks('me')}`;
+}
+function vAdmin(){
+  const pgs=[...PAGES.map(p=>[p[0],p[2]]),['reg','Register']];
+  return `<div class="center">${X('h2','adm.t','⚙️ Admin')}</div>
+  <div class="card"><h3>1. Design</h3><p class="mute">Turn on edit mode, then open any page and tap a text or box to change its text, color (type a color code like #d9667f), font, size, corner radius or spacing. Use “Page color” for the page background. Changes appear on the guest link automatically.</p><button class="btn" id="editOn">✏️ Start edit mode</button></div>
+  <div class="card"><h3>2. Wedding logo (register page)</h3>${S.media.logo?`<img class="logo" src="${S.media.logo}">`:''}<button class="btn ghost sm" id="logoUp">Upload logo</button> ${S.media.logo?'<button class="btn ghost sm" id="logoDel">Remove</button>':''}</div>
+  <div class="card"><h3>3. Page names &amp; icons</h3>${PAGES.map(([k,i,l])=>`<div class="adm"><span class="av">${S.media.icons[k]?`<img src="${S.media.icons[k]}">`:esc(S.config.icons[k]||i)}</span><div><input type="text" data-lab="${k}" value="${esc(S.config.labels[k]||l)}" style="margin:0 0 4px"><input type="text" data-emo="${k}" value="${esc(S.config.icons[k]||i)}" maxlength="4" style="margin:0" placeholder="Emoji"></div><div><button class="btn ghost sm" data-icup="${k}">Picture</button>${S.media.icons[k]?` <button class="btn ghost sm" data-icdel="${k}">✕</button>`:''}</div></div>`).join('')}</div>
+  <div class="card"><h3>4. Add layout blocks</h3><select id="bpg">${pgs.map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select><button class="btn sm" id="badd">Add block</button><p class="mute">Added blocks appear at the bottom of that page; edit them in edit mode.</p>${S.config.blocks.map(b=>`<div class="adm"><div>${esc(S.config.tx['blk'+b.id+'t']||'New section')} <span class="mute">(${b.page})</span></div><button class="btn red sm" data-bdel="${b.id}">Delete</button></div>`).join('')}</div>
+  <div class="card"><h3>5. Role management</h3><p class="mute">Only 1 admin at a time. Making someone else admin turns you into a guest.</p>${Object.keys(S.guests).map(id=>`<div class="adm">${avatar(id)}<div>${esc(gname(id))}<div class="mute">${id===adminId()?'Admin':'Guest'}</div></div>${id===adminId()?'<span class="badge">Admin</span>':`<button class="btn ghost sm" data-mkadm="${id}">Make admin</button>`}</div>`).join('')}</div>
+  <div class="card"><h3>6. Participants (${Object.keys(S.guests).length})</h3>${Object.keys(S.guests).map(id=>`<div class="adm">${avatar(id)}<div>${esc(gname(id))}<div class="mute">${coins(id).total} coins</div></div>${id===adminId()?'<span class="badge">Admin</span>':`<button class="btn red sm" data-gdel="${id}">Delete</button>`}</div>`).join('')||'<p class="mute">No participants yet</p>'}</div>
+  <div class="card"><h3>7. Gallery photos (${Object.keys(S.photos).length})</h3><div class="thumbs">${Object.entries(S.photos).map(([id,p])=>`<div><img src="${p.img}"><div class="mute">${esc(gname(p.owner))}</div><button class="btn red sm" data-pdel="${id}">Delete</button></div>`).join('')}</div></div>`;
+}
+
+function bind(){
+  document.querySelectorAll('[data-hero]').forEach(el=>el.onclick=()=>pick(d=>{const h=[...S.media.heroes];h[+el.dataset.hero]=d;setMedia({heroes:h})},480));
+  document.querySelectorAll('[data-add]').forEach(el=>el.onclick=()=>{if(myPhotos().length>=5)return;pick(d=>put('photos','p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),{owner:me.id,img:d,cap:'',t:Date.now()}))});
+  document.querySelectorAll('[data-chg]').forEach(el=>el.onclick=()=>pick(d=>{const id=el.dataset.chg;put('photos',id,{...S.photos[id],img:d})}));
+  document.querySelectorAll('[data-rm]').forEach(el=>el.onclick=()=>{if(confirm('Remove this photo? You will lose its coins.'))delPhoto(el.dataset.rm)});
+  document.querySelectorAll('[data-cap]').forEach(el=>el.onchange=()=>{const id=el.dataset.cap;put('photos',id,{...S.photos[id],cap:el.value.trim()})});
+  document.querySelectorAll('[data-like]').forEach(el=>el.onclick=()=>{const id=el.dataset.like,k=me.id+'_'+id;if(S.likes[k])del('likes',k);else if(myLikes().length<5&&S.photos[id].owner!==me.id)put('likes',k,{by:me.id,photo:id,owner:S.photos[id].owner})});
+  const er=$('#editRules');if(er)er.onclick=()=>{$('#rl').outerHTML=`<textarea id="rt" rows="8" style="margin-top:10px">${esc(S.config.rules.join('\n'))}</textarea>`;er.textContent='Save rules';er.onclick=()=>setCfg({rules:$('#rt').value.split('\n').map(s=>s.trim()).filter(Boolean)})};
+  const ab=$('#avBtn');if(ab)ab.onclick=()=>pick(d=>put('guests',me.id,{...S.guests[me.id],av:d}),160);
+  const pns=$('#pns');if(pns)pns.onclick=()=>{const v=$('#pn').value.trim();if(!v)return;if(nameTaken(v,me.id)){$('#er').textContent='This name is already taken. Please choose another name.';return}me.name=v;put('guests',me.id,{...S.guests[me.id],name:v})};
+  const ba=$('#beAdmin');if(ba)ba.onclick=()=>{if(!adminId())put('guests',me.id,{...S.guests[me.id],role:'admin',at:Date.now()})};
+  if(tab!=='admin')return;
+  document.querySelectorAll('[data-mkadm]').forEach(el=>el.onclick=()=>{const id=el.dataset.mkadm;if(confirm('Make '+gname(id)+' the admin? You will become a guest.')){put('guests',me.id,{...S.guests[me.id],role:'guest'});put('guests',id,{...S.guests[id],role:'admin',at:Date.now()})}});
+  $('#editOn').onclick=()=>{EDIT=true;tab='home';render()};
+  $('#logoUp').onclick=()=>pick(d=>setMedia({logo:d}),300);const ld=$('#logoDel');if(ld)ld.onclick=()=>setMedia({logo:''});
+  document.querySelectorAll('[data-lab]').forEach(el=>el.onchange=()=>setCfg({labels:{...S.config.labels,[el.dataset.lab]:el.value}}));
+  document.querySelectorAll('[data-emo]').forEach(el=>el.onchange=()=>setCfg({icons:{...S.config.icons,[el.dataset.emo]:el.value}}));
+  document.querySelectorAll('[data-icup]').forEach(el=>el.onclick=()=>pick(d=>setMedia({icons:{...S.media.icons,[el.dataset.icup]:d}}),96));
+  document.querySelectorAll('[data-icdel]').forEach(el=>el.onclick=()=>{const i={...S.media.icons};delete i[el.dataset.icdel];setMedia({icons:i})});
+  $('#badd').onclick=()=>setCfg({blocks:[...S.config.blocks,{id:Date.now().toString(36),page:$('#bpg').value}]});
+  document.querySelectorAll('[data-bdel]').forEach(el=>el.onclick=()=>setCfg({blocks:S.config.blocks.filter(b=>b.id!==el.dataset.bdel)}));
+  document.querySelectorAll('[data-gdel]').forEach(el=>el.onclick=()=>{if(confirm('Delete this participant and all their photos and likes?'))delGuest(el.dataset.gdel)});
+  document.querySelectorAll('[data-pdel]').forEach(el=>el.onclick=()=>{if(confirm('Delete this photo from the gallery?'))delPhoto(el.dataset.pdel)});
+}
+function delPhoto(id){Object.entries(S.likes).forEach(([k,l])=>{if(l.photo===id)del('likes',k,1)});del('photos',id)}
+function delGuest(id){Object.entries(S.photos).forEach(([pid,p])=>{if(p.owner===id)delPhoto(pid)});Object.entries(S.likes).forEach(([k,l])=>{if(l.by===id)del('likes',k,1)});del('guests',id)}
+
+function openPanel(kind,key,d){
+  const s=st(key),p=$('#panel');let h=`<b>${esc(key)}</b><br>`;
+  const f=(l,i)=>`<label class="mute">${l}</label>${i}`;
+  const cf=(id,v,def)=>`<div class="cf"><input type="color" data-p="${id}" value="${/^#[0-9a-f]{6}$/i.test(v||'')?v:def}"><input type="text" data-p="${id}" value="${esc(v||'')}" placeholder="#d9667f"></div>`;
+  if(kind==='k')h+=f('Text',`<input type="text" data-p="text" value="${esc(S.config.tx[key]??d)}">`)+f('Text color (color code)',cf('color',s.color,'#4a2c35'))+f('Font',`<select data-p="font"><option value="">Default</option>${FONTS.map(x=>`<option ${s.font===x?'selected':''}>${x}</option>`).join('')}</select>`)+f('Text size (px)',`<input type="number" data-p="size" value="${s.size||''}" min="8" max="80">`);
+  else if(kind==='c')h+=f('Box color (color code)',cf('bg',s.bg,'#ffffff'))+f('Corner radius (px)',`<input type="number" data-p="radius" value="${s.radius??''}" min="0" max="60">`)+f('Spacing inside box / size (px)',`<input type="number" data-p="pad" value="${s.pad??''}" min="0" max="80">`);
+  else h+=f('Page background color (color code)',cf('bg',s.bg,'#fff5f7'));
+  p.innerHTML=h+`<div class="row"><button class="btn ghost sm" id="pr">Reset</button><button class="btn sm" id="pc">Close</button></div>`;p.classList.remove('hidden');
+  p.querySelectorAll('[data-p]').forEach(el=>{
+    const fl=el.dataset.p,apply=sv=>{let v=el.value;
+      if(el.type==='color'){const t=p.querySelector('input[type=text][data-p="'+fl+'"]');if(t)t.value=v}
+      else if(el.type==='text'&&fl!=='text'){const c=p.querySelector('input[type=color][data-p="'+fl+'"]');if(c&&/^#[0-9a-f]{6}$/i.test(v))c.value=v}
+      if(fl==='text')S.config={...S.config,tx:{...S.config.tx,[key]:v}};
+      else{if(['size','radius','pad'].includes(fl))v=v===''?'':+v;S.config={...S.config,st:{...S.config.st,[key]:{...st(key),[fl]:v}}}}
+      render();if(sv)commit('config')};
+    el.oninput=()=>apply(false);el.onchange=()=>apply(true)});
+  $('#pr').onclick=()=>{const a={...S.config.st},b={...S.config.tx};delete a[key];delete b[key];setCfg({st:a,tx:b});p.classList.add('hidden')};
+  $('#pc').onclick=()=>p.classList.add('hidden');
+}
+document.addEventListener('click',e=>{if(!EDIT||!e.target.closest('#app'))return;e.preventDefault();e.stopPropagation();const k=e.target.closest('[data-k]');if(k)return openPanel('k',k.dataset.k,k.dataset.d);const c=e.target.closest('[data-c]');if(c)openPanel('c',c.dataset.c)},true);
+$('#pgc').onclick=()=>openPanel('p','page:'+(me.name?tab:'reg'));
+$('#done').onclick=()=>{EDIT=false;$('#panel').classList.add('hidden');tab='admin';render()};
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBJKOHBsu3XhhdKcdIpI1no5SuWmGBBBGY",
+  authDomain: "wedding-game-7fcdb.firebaseapp.com",
+  projectId: "wedding-game-7fcdb",
+  storageBucket: "wedding-game-7fcdb.firebasestorage.app",
+  messagingSenderId: "567815531781",
+  appId: "1:567815531781:web:b3c2eef659760dae841b6c"
+};
+
+(async function init(){
+  try{firebase.initializeApp(firebaseConfig);DB=firebase.firestore();}catch(e){DB=null}
+  try{me.id=localStorage.getItem('wg_uid')}catch(e){}
+  if(!me.id){me.id='g'+Math.random().toString(36).slice(2,10);try{localStorage.setItem('wg_uid',me.id)}catch(e){}}
+  if(DB){
+    DB.doc('config/main').onSnapshot(s=>{if(s.exists)S.config={...DEF(),...s.data()};render()});
+    DB.doc('media/main').onSnapshot(s=>{if(s.exists)S.media={heroes:[],logo:'',icons:{},...s.data()};render()});
+    ['guests','photos','likes'].forEach(c=>DB.collection(c).onSnapshot(q=>{const o={};q.docs.forEach(d=>o[d.id]=d.data());S[c]=o;
+      if(c==='guests'){if(o[me.id]){me.name=o[me.id].name;me.joined=true}else if(me.joined){me.name=null;me.joined=false}}render()}));
+  }else{
+    try{const s=JSON.parse(localStorage.getItem('wg_state'));if(s){S={...S,...s,config:{...DEF(),...s.config}}}}catch(e){}
+    if(S.guests[me.id])me.name=S.guests[me.id].name;
+  }
+  render();
+})();
+</script>
+</body>
+</html>
